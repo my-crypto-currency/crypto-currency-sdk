@@ -6,6 +6,11 @@ pub struct XrpWallet {
 }
 
 impl XrpWallet {
+    pub fn new_ed25519_random() -> Self {
+        let entropy = Entropy::new_random();
+        Self::generate_ed25519_keypair(&entropy).unwrap()
+    }
+
     pub fn generate_ed25519_keypair(entropy: &Entropy) -> Result<Self, String> {
         let raw_priv = entropy.sha512_digest_32();
         Self::from_private_key(raw_priv)
