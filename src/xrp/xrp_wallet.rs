@@ -7,9 +7,13 @@ pub struct XrpWallet {
 
 impl XrpWallet {
     pub fn generate_ed25519_keypair(entropy: &Entropy) -> Result<Self, String> {
-        use ring::signature::{self, KeyPair};
-
         let raw_priv = entropy.sha512_digest_32();
+        Self::from_private_key(raw_priv)
+        //Ok((raw_priv.into(), raw_pub.into()))
+    }
+
+    pub fn from_private_key(raw_priv: Vec<u8>) -> Result<Self, String> {
+        use ring::signature::{self, KeyPair};
 
         let key_pair = signature::Ed25519KeyPair::from_seed_unchecked(&raw_priv)
             .map_err(|err| err.to_string())?;
@@ -20,7 +24,6 @@ impl XrpWallet {
             public_key: raw_pub.into(),
             private_key: raw_priv.into(),
         })
-        //Ok((raw_priv.into(), raw_pub.into()))
     }
 
     pub fn get_public_address(&self, is_main_net: bool) -> XrpPublicAddress {
