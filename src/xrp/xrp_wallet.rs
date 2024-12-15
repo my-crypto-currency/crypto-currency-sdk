@@ -1,8 +1,8 @@
 use super::{Entropy, XrpPrivateKey, XrpPublicAddress, XrpPublicKey};
 
 pub struct XrpWallet {
-    pub public_key: XrpPublicKey,
-    pub private_key: XrpPrivateKey,
+    public_key: XrpPublicKey,
+    private_key: Option<XrpPrivateKey>,
 }
 
 impl XrpWallet {
@@ -22,13 +22,17 @@ impl XrpWallet {
 
         Ok(Self {
             public_key: raw_pub.into(),
-            private_key: raw_priv.into(),
+            private_key: Some(raw_priv.into()),
         })
+    }
+
+    pub fn get_pubic_key(&self) -> &XrpPublicKey {
+        &self.public_key
     }
 
     pub fn get_public_address(&self, is_main_net: bool) -> XrpPublicAddress {
         // 1. SHA-256 Hash
-        let public_key_sha256 = self.public_key.get_sha256();
+        let public_key_sha256 = self.get_pubic_key().get_sha256();
 
         let ripemd160_hash = crate::utils::calc_ripemd160(&public_key_sha256);
 
@@ -52,9 +56,13 @@ impl XrpWallet {
     }
 
     pub fn sign(&self, message: &str) -> Result<Vec<u8>, String> {
-        let key_pair =
-            ring::signature::Ed25519KeyPair::from_seed_unchecked(self.private_key.as_bytes())
-                .map_err(|err| err.to_string())?;
+        let private_key = match &self.private_key {
+            Some(key) => key,
+            None => return Err("Private key is not available.".to_string()),
+        };
+
+        let key_pair = ring::signature::Ed25519KeyPair::from_seed_unchecked(private_key.as_bytes())
+            .map_err(|err| err.to_string())?;
 
         let signature = key_pair.sign(message.as_bytes());
 
@@ -82,7 +90,10 @@ mod test {
         let key_pair = XrpWallet::generate_ed25519_keypair(&entropy).unwrap();
 
         println!("Public XRP Key: {}", key_pair.public_key);
-        println!("Private XRP Key: {}", key_pair.private_key);
+        println!(
+            "Private XRP Key: {}",
+            key_pair.private_key.as_ref().unwrap()
+        );
         println!("Public XRP address: {}", key_pair.get_public_address(true));
 
         let message = "This is the message to be signed.";
