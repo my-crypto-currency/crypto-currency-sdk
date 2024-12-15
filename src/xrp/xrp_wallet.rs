@@ -1,11 +1,11 @@
 use super::{Entropy, XrpPrivateKey, XrpPublicAddress, XrpPublicKey};
 
-pub struct XrpKeyPair {
+pub struct XrpWallet {
     pub public_key: XrpPublicKey,
     pub private_key: XrpPrivateKey,
 }
 
-impl XrpKeyPair {
+impl XrpWallet {
     pub fn generate_ed25519_keypair(entropy: &Entropy) -> Result<Self, String> {
         use ring::signature::{self, KeyPair};
 
@@ -73,10 +73,10 @@ mod test {
     #[test]
     fn test_xrp() {
         use super::super::Entropy;
-        use super::XrpKeyPair;
+        use super::XrpWallet;
 
         let entropy = Entropy::new_random();
-        let key_pair = XrpKeyPair::generate_ed25519_keypair(&entropy).unwrap();
+        let key_pair = XrpWallet::generate_ed25519_keypair(&entropy).unwrap();
 
         println!("Public XRP Key: {}", key_pair.public_key);
         println!("Private XRP Key: {}", key_pair.private_key);
