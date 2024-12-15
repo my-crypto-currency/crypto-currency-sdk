@@ -12,3 +12,9 @@ impl Into<Base58Array> for &'_ [u8] {
         Base58Array(result)
     }
 }
+
+impl std::fmt::Display for Base58Array {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.as_str())
+    }
+}

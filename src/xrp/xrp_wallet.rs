@@ -35,6 +35,10 @@ impl XrpWallet {
         &self.public_key
     }
 
+    pub fn get_private_key(&self) -> &XrpPrivateKey {
+        &self.private_key
+    }
+
     pub fn get_public_address(&self, is_main_net: bool) -> XrpPublicAddress {
         // 1. SHA-256 Hash
         let public_key_sha256 = self.get_pubic_key().get_sha256();

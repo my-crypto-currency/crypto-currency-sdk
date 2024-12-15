@@ -30,6 +30,12 @@ impl Into<HexArray> for String {
     }
 }
 
+impl std::fmt::Display for HexArray {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.as_str())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::HexArray;
