@@ -1,23 +1,16 @@
-use crate::HexArray;
+use std::fmt::Debug;
+
+use rust_extensions::hex::HexArray;
 
 pub struct XrpPrivateKey(Vec<u8>);
 
 impl XrpPrivateKey {
-    pub fn from_hex(src: &str) -> Self {
-        let from_hex = hex::decode(&src).unwrap();
-        Self(from_hex)
+    pub fn to_string(&self) -> HexArray {
+        HexArray::from_slice_uppercase(self.0.as_slice())
     }
 
     pub fn as_bytes(&self) -> &[u8] {
         &self.0
-    }
-
-    pub fn as_hex(&self) -> HexArray {
-        self.0.as_slice().into()
-    }
-
-    pub fn as_base58(&self) -> super::Base58Array {
-        self.0.as_slice().into()
     }
 }
 
@@ -29,7 +22,12 @@ impl Into<XrpPrivateKey> for Vec<u8> {
 
 impl std::fmt::Display for XrpPrivateKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let hex = self.as_hex();
-        write!(f, "{}", hex.as_str())
+        write!(f, "{}", self.to_string())
+    }
+}
+
+impl Debug for XrpPrivateKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("XrpPrivateKey").field(&self.0).finish()
     }
 }

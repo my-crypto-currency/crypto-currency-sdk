@@ -1,10 +1,14 @@
 use std::fmt::Display;
 
-use crate::HexArray;
+use rust_extensions::hex::HexArray;
 
 pub struct XrpPublicKey(Vec<u8>);
 
 impl XrpPublicKey {
+    pub fn to_string(&self) -> HexArray {
+        HexArray::from_slice_uppercase(self.0.as_slice())
+    }
+
     pub fn as_bytes(&self) -> &[u8] {
         &self.0
     }

@@ -10,4 +10,5 @@ mod xrp_wallet;
 pub use xrp_wallet::*;
 mod base58_array;
 pub use base58_array::*;
-const BASE58_ALPHABET: &str = "rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz";
+mod seed_ed25519;
+pub use seed_ed25519::*;
