@@ -25,21 +25,21 @@ impl Base58Array {
 
 impl Into<Base58Array> for &'_ [u8] {
     fn into(self) -> Base58Array {
-        let result = base_x::encode(super::BASE58_ALPHABET, self);
+        let result = base_x::encode(BASE58_ALPHABET, self);
         Base58Array(result)
     }
 }
 
 impl Into<Base58Array> for Vec<u8> {
     fn into(self) -> Base58Array {
-        let result = base_x::encode(super::BASE58_ALPHABET, self.as_slice());
+        let result = base_x::encode(BASE58_ALPHABET, self.as_slice());
         Base58Array(result)
     }
 }
 
 impl Into<Base58Array> for &'_ str {
     fn into(self) -> Base58Array {
-        let result = base_x::encode(super::BASE58_ALPHABET, self.as_bytes());
+        let result = base_x::encode(BASE58_ALPHABET, self.as_bytes());
         Base58Array(result)
     }
 }

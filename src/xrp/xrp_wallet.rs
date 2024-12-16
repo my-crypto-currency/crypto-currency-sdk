@@ -130,7 +130,7 @@ mod test {
         );
 
         assert_eq!(
-            xrp_wallet.get_public_address(true).as_str(),
+            xrp_wallet.get_public_address(false).as_str(),
             "rDXQD4zC5LjwB7wAoJMn7aEk8dPRHHtUCu"
         );
     }
