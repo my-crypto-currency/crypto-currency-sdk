@@ -1,5 +1,5 @@
-mod public_address;
-pub use public_address::*;
+mod address;
+pub use address::*;
 mod public_key;
 pub use public_key::*;
 mod private_key;
@@ -12,3 +12,5 @@ mod base58_array;
 pub use base58_array::*;
 mod seed_ed25519;
 pub use seed_ed25519::*;
+mod network_type;
+pub use network_type::*;

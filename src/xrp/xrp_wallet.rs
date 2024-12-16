@@ -1,6 +1,4 @@
-use crate::xrp::Base58Array;
-
-use super::{SeedED25519, XrpPrivateKey, XrpPublicAddress, XrpPublicKey};
+use super::{SeedED25519, XrpAddress, XrpPrivateKey, XrpPublicKey};
 
 pub struct XrpWallet {
     public_key: XrpPublicKey,
@@ -21,30 +19,8 @@ impl XrpWallet {
         &self.private_key
     }
 
-    pub fn get_public_address(&self, is_main_net: bool) -> XrpPublicAddress {
-        // 1. SHA-256 Hash
-        let public_key_sha256 = self.get_pubic_key().get_sha256();
-
-        let ripemd160_hash = crate::utils::calc_ripemd160(&public_key_sha256);
-
-        // 3. Network Byte
-        let network_byte: u8 = if is_main_net { 0x00 } else { 0x74 };
-        let mut address_bytes = vec![network_byte];
-        address_bytes.extend_from_slice(&ripemd160_hash);
-
-        // 4. Double SHA-256 Hash
-        let sha256_hash_1 = crate::utils::calc_sha256(address_bytes.as_slice());
-
-        let sha256_hash_2 = crate::utils::calc_sha256(sha256_hash_1.as_slice());
-
-        // 5. Checksum
-        let checksum = &sha256_hash_2[..4];
-        // 6. Append Checksum
-        address_bytes.extend_from_slice(checksum);
-
-        let base58: Base58Array = address_bytes.into();
-
-        base58.into()
+    pub fn get_public_address(&self) -> XrpAddress {
+        self.get_pubic_key().into()
     }
 
     pub fn sign(&self, message: &str) -> Result<Vec<u8>, String> {
@@ -74,15 +50,10 @@ impl TryInto<XrpWallet> for &'_ SeedED25519 {
 
         let raw_private_key = &sha_512[0..32];
 
-        //let hex = HexArray::from_slice_uppercase(raw_private_key);
-        //let private_key = format!("EB{}", hex.as_str());
-
         let key_pair = ring::signature::Ed25519KeyPair::from_seed_unchecked(raw_private_key)
             .map_err(|itm| format!("Failed to create key pair. Err: {}", itm))?;
 
         let public_key_raw = key_pair.public_key().as_ref();
-
-        //       println!("Public Key: {:?}", public_key_raw);
 
         let mut private_key = Vec::with_capacity(raw_private_key.len() + 1);
         private_key.push(0xed);
@@ -130,8 +101,28 @@ mod test {
         );
 
         assert_eq!(
-            xrp_wallet.get_public_address(false).as_str(),
+            xrp_wallet.get_public_address().as_str(),
             "rDXQD4zC5LjwB7wAoJMn7aEk8dPRHHtUCu"
+        );
+    }
+
+    #[test]
+    fn test_restore_other_testnet_wallet() {
+        let seed = SeedED25519::from_phrase("sEd7hgMeGgKiKZQ74imayaNGcx62tg4").unwrap();
+        let xrp_wallet: XrpWallet = seed.try_into().unwrap();
+
+        assert_eq!(
+            "EDF28A5980EA4A8E5DE51A9520782C3CC7C89F7112990C3871AC73283EDAFEACA2",
+            xrp_wallet.get_private_key().to_string().as_str()
+        );
+        assert_eq!(
+            "EDCEDF86F8A6C4C1AA3CCF92F36E6C7524471E0A43B2A570F03FBB69039B94073B",
+            xrp_wallet.get_pubic_key().to_string().as_str()
+        );
+
+        assert_eq!(
+            xrp_wallet.get_public_address().as_str(),
+            "rJj4Nvu8qghDL8bwcGKqPyMaDBV8Vdrakm"
         );
     }
 }
