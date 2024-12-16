@@ -45,3 +45,26 @@ impl Into<XrpAddress> for &'_ XrpPublicKey {
         base58.into()
     }
 }
+
+impl From<XrpPublicKey> for XrpAddress {
+    fn from(src: XrpPublicKey) -> Self {
+        (&src).into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rust_extensions::hex::HexArray;
+
+    #[test]
+    fn test_address_generation() {
+        let hex_array: HexArray =
+            "ED9434799226374926EDA3B54B1B461B4ABF7237962EAE18528FEA67595397FA32".into();
+
+        let public_key: super::XrpPublicKey = hex_array.into();
+
+        let address: super::XrpAddress = public_key.into();
+
+        assert_eq!(address.as_str(), "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN");
+    }
+}

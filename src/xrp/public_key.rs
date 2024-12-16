@@ -32,6 +32,12 @@ impl Into<XrpPublicKey> for Vec<u8> {
     }
 }
 
+impl Into<XrpPublicKey> for HexArray {
+    fn into(self) -> XrpPublicKey {
+        XrpPublicKey(self.to_bytes())
+    }
+}
+
 impl Display for XrpPublicKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let hex = self.as_hex();
