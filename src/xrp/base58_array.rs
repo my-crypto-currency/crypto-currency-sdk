@@ -11,6 +11,10 @@ impl Base58Array {
         base_x::decode(BASE58_ALPHABET, self.0.as_str()).unwrap()
     }
 
+    pub fn into_string(self) -> String {
+        self.0
+    }
+
     pub fn decode(src: &str) -> Vec<u8> {
         base_x::decode(BASE58_ALPHABET, src).unwrap()
     }
